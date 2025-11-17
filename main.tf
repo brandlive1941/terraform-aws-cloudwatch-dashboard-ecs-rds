@@ -302,6 +302,6 @@ locals {
   }]
 
 
-  widgets = concat(local.ecs_cpu_memory_widget, local.asg_metrics_widget, local.rds_storage_widget, local.rds_db_connections_widget, local.rds_cpu_credit_widget, local.rds_cpu_widget, local.rds_disk_queue_widget, local.rds_latency_widget, local.rds_iops_widget, local.rds_freeable_memory_widget)
+  widgets = concat(local.ecs_cpu_memory_widget, local.asg_metrics_widget, local.rds_acu_util_widget, local.rds_db_connections_widget, local.rds_cpu_credit_widget, local.rds_cpu_widget, local.rds_disk_queue_widget, local.rds_cpu_util, local.rds_freeable_memory_widget)
 
 }
