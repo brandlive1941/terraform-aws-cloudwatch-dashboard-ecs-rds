@@ -112,59 +112,7 @@ locals {
     }
   }]
 
-  rds_latency_widget = [for db_instance_identifier in var.rds_names : {
-    type   = "metric"
-    width  = 12
-    height = 8
-    properties = {
-      view    = "timeSeries"
-      stacked = false
-      metrics = [
-        ["AWS/RDS", "ReadLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#ff7f0e", stat = "Maximum" }],
-        ["AWS/RDS", "WriteLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#8c564b", stat = "Maximum" }]
-      ]
-      region = local.aws_region
-
-      yAxis = {
-        left = {
-          min = 0
-        }
-        right = {
-          min = 0
-        }
-      }
-      title  = "RDS Latency Metrics - ${db_instance_identifier}"
-      period = var.period
-    }
-  }]
-
-  rds_iops_widget = [for db_instance_identifier in var.rds_names : {
-    type   = "metric"
-    width  = 12
-    height = 8
-    properties = {
-      view    = "timeSeries"
-      stacked = false
-      metrics = [
-        ["AWS/RDS", "ReadIOPS", "DBInstanceIdentifier", db_instance_identifier, { color = "#9467bd", stat = "Maximum" }],
-        ["AWS/RDS", "WriteIOPS", "DBInstanceIdentifier", db_instance_identifier, { color = "#17becf", stat = "Maximum" }]
-      ]
-      region = local.aws_region
-
-      yAxis = {
-        left = {
-          min = 0
-        }
-        right = {
-          min = 0
-        }
-      }
-      title  = "RDS IOPS Metrics - ${db_instance_identifier}"
-      period = var.period
-    }
-  }]
-
-  rds_storage_widget = [for db_instance_identifier in var.rds_names : {
+  rds_acu_util_widget = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
     width  = 4
     height = 4
@@ -172,7 +120,39 @@ locals {
       view    = "singleValue"
       stacked = false
       metrics = [
-        ["AWS/RDS", "FreeStorageSpace", "DBInstanceIdentifier", db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }]
+        ["AWS/RDS", "ACUUtilization", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }]
+      ]
+      region = local.aws_region
+      annotations = {
+        horizontal = [
+          {
+            color = "#ff0000",
+            value = 50
+          }
+        ]
+      }
+      yAxis = {
+        left = {
+          min = 0
+        }
+        right = {
+          min = 0
+        }
+      }
+      title  = "Aurora ACU Utilization - ${db_instance_identifier}"
+      period = var.period
+    }
+  }]
+
+  rds_cpu_util = [for db_instance_identifier in var.rds_names : {
+    type   = "metric"
+    width  = 4
+    height = 4
+    properties = {
+      view    = "singleValue"
+      stacked = false
+      metrics = [
+        ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }]
       ]
       region = local.aws_region
       yAxis = {
@@ -183,7 +163,7 @@ locals {
           min = 0
         }
       }
-      title  = "RDS Storage Metrics - ${db_instance_identifier}"
+      title  = "Aurora CPUUtilization Metrics - ${db_instance_identifier}"
       period = var.period
     }
   }]
