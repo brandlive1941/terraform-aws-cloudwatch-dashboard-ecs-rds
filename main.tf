@@ -13,7 +13,7 @@ resource "aws_cloudwatch_dashboard" "main" {
 
 
 locals {
-  aws_region = data.aws_region.current.name
+  aws_region = data.aws_region.region
 
   rds_db_connections_widget = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
@@ -130,7 +130,7 @@ locals {
           min = 0
         }
       }
-      title  = "ECS CPU and Memory Metrics - ${var.cluster_name} / ${service_name}"
+      title  = "ECS CPU and Memory Metrics - ${var.cluster_name}"
       period = var.period
     }
   }]
@@ -162,7 +162,7 @@ locals {
           min = 0
         }
       }
-      title  = "ECS CPU and Memory Metrics - ${var.cluster_name} / ${service_name}"
+      title  = "ECS CPU and Memory Metrics - ${var.cluster_name}"
       period = var.period
     }
   }]
