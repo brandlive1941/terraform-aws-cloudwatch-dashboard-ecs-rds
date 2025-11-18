@@ -1,5 +1,3 @@
-data "aws_region" "current" {}
-
 resource "aws_cloudwatch_dashboard" "main" {
 
   count = var.dashboard_name != "" ? 1 : 0
@@ -13,7 +11,7 @@ resource "aws_cloudwatch_dashboard" "main" {
 
 
 locals {
-  aws_region = data.aws_region.region
+  aws_region = "us-west-2"
 
   rds_db_connections_widget = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
