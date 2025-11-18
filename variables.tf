@@ -17,8 +17,8 @@ variable "cluster_name" {
 
 variable "service_names" {
   description = "A list of the exact names of the services to show on the dashboard"
-  type        = list(string)
-  default     = []
+  type        = map(string)
+  default     = {}
 }
 
 variable "rds_names" {
