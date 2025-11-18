@@ -15,71 +15,6 @@ resource "aws_cloudwatch_dashboard" "main" {
 locals {
   aws_region = data.aws_region.current.name
 
-  ecs_cpu_memory_widget = [for service_name in var.service_names : {
-    type   = "metric"
-    width  = 12
-    height = 8
-    properties = {
-      view    = "timeSeries"
-      stacked = false
-      metrics = [
-        ["AWS/ECS", "CPUUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = "#d62728", stat = "Maximum" }],
-        [".", "MemoryUtilization", ".", ".", ".", ".", { yAxis = "left", color = "#1f77b4", stat = "Maximum" }]
-      ]
-      region = local.aws_region,
-      annotations = {
-        horizontal = [
-          {
-            color = "#ff0000",
-            value = 100
-          }
-        ]
-      }
-      yAxis = {
-        left = {
-          min = 0
-        }
-        right = {
-          min = 0
-        }
-      }
-      title  = "ECS CPU and Memory Metrics - ${var.cluster_name} / ${service_name}"
-      period = var.period
-    }
-  }]
-
-  rds_cpu_widget = [for db_instance_identifier in var.rds_names : {
-    type   = "metric"
-    width  = 12
-    height = 8
-    properties = {
-      view    = "timeSeries"
-      stacked = false
-      metrics = [
-        ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", db_instance_identifier, { color = "#d62728", stat = "Maximum" }]
-      ]
-      region = local.aws_region
-      annotations = {
-        horizontal = [
-          {
-            color = "#ff0000",
-            value = 100
-          }
-        ]
-      }
-      yAxis = {
-        left = {
-          min = 0
-        }
-        right = {
-          min = 0
-        }
-      }
-      title  = "RDS CPU Metrics - ${db_instance_identifier}"
-      period = var.period
-    }
-  }]
-
   rds_db_connections_widget = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
     width  = 4
@@ -168,7 +103,97 @@ locals {
     }
   }]
 
-  rds_cpu_credit_widget = [for db_instance_identifier in var.rds_names : {
+  ecs_cpu_util = [ {
+    type   = "metric"
+    width  = 12
+    height = 8
+    properties = {
+      view    = "timeSeries"
+      stacked = false
+      metrics = [
+        for service_name in var.service_names : ["AWS/ECS", "CPUUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = "#d62728", stat = "Maximum" }]
+      ]
+      region = local.aws_region,
+      annotations = {
+        horizontal = [
+          {
+            color = "#ff0000",
+            value = 100
+          }
+        ]
+      }
+      yAxis = {
+        left = {
+          min = 0
+        }
+        right = {
+          min = 0
+        }
+      }
+      title  = "ECS CPU and Memory Metrics - ${var.cluster_name} / ${service_name}"
+      period = var.period
+    }
+  }]
+
+  ecs_memory_util = [ {
+    type   = "metric"
+    width  = 12
+    height = 8
+    properties = {
+      view    = "timeSeries"
+      stacked = false
+      metrics = [
+        for service_name in var.service_names : ["AWS/ECS", "MemoryUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = "#1f77b4", stat = "Maximum" }]
+      ]
+      region = local.aws_region,
+      annotations = {
+        horizontal = [
+          {
+            color = "#ff0000",
+            value = 100
+          }
+        ]
+      }
+      yAxis = {
+        left = {
+          min = 0
+        }
+        right = {
+          min = 0
+        }
+      }
+      title  = "ECS CPU and Memory Metrics - ${var.cluster_name} / ${service_name}"
+      period = var.period
+    }
+  }]
+
+  rds_latency = [for db_instance_identifier in var.rds_names : {
+    type   = "metric"
+    width  = 12
+    height = 8
+    properties = {
+      view    = "timeSeries"
+      stacked = false
+      metrics = [
+        ["AWS/RDS", "ReadLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#ff7f0e", stat = "Average" }],
+        ["AWS/RDS", "WriteLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Average" }],
+      ]
+      region = local.aws_region
+
+      yAxis = {
+        left = {
+          min = 0
+        }
+        right = {
+          min = 0
+        }
+      }
+      title  = "RDS Read/Write Latency - ${db_instance_identifier}"
+      period = var.period
+    }
+  }]
+
+  rds_cpu_credit = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
     width  = 4
     height = 4
@@ -198,7 +223,7 @@ locals {
     }
   }]
 
-  rds_disk_queue_widget = [for db_instance_identifier in var.rds_names : {
+  rds_disk_queue = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
     width  = 12
     height = 8
@@ -219,32 +244,6 @@ locals {
         }
       }
       title  = "RDS Disk Queue Depth - ${db_instance_identifier}"
-      period = var.period
-    }
-  }]
-
-  rds_latency = [for db_instance_identifier in var.rds_names : {
-    type   = "metric"
-    width  = 12
-    height = 8
-    properties = {
-      view    = "timeSeries"
-      stacked = false
-      metrics = [
-        ["AWS/RDS", "ReadLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#ff7f0e", stat = "Average" }],
-        ["AWS/RDS", "WriteLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Average" }],
-      ]
-      region = local.aws_region
-
-      yAxis = {
-        left = {
-          min = 0
-        }
-        right = {
-          min = 0
-        }
-      }
-      title  = "RDS EBS Byte Balance - ${db_instance_identifier}"
       period = var.period
     }
   }]
@@ -271,7 +270,7 @@ locals {
           min = 0
         }
       }
-      title  = "RDS Freeable Memory - ${db_instance_identifier}"
+      title  = "RDS Deadlocks and Blocked Transactions - ${db_instance_identifier}"
       period = var.period
     }
   }]
@@ -302,6 +301,6 @@ locals {
     }
   }]
 
-  widgets = concat(local.ecs_cpu_memory_widget, local.asg_metrics_widget, local.rds_acu_util_widget, local.rds_db_connections_widget, local.rds_cpu_widget, local.rds_disk_queue_widget, local.rds_cpu_util, local.rds_latency, local.rds_deadlocks)
+  widgets = concat(local.rds_db_connections_widget, local.rds_acu_util_widget,  local.ecs_cpu_util, local.ecs_memory_util, local.rds_latency, local.rds_disk_queue, local.rds_cpu_credit, local.rds_deadlocks, local.asg_metrics_widget)
 
 }
