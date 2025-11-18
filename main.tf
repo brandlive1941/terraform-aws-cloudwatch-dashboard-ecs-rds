@@ -191,36 +191,6 @@ locals {
     }
   }]
 
-  rds_cpu_credit = [for db_instance_identifier in var.rds_names : {
-    type   = "metric"
-    width  = 4
-    height = 4
-    properties = {
-      view    = "pie"
-      stacked = true
-      metrics = [
-        ["AWS/RDS", "CPUCreditBalance", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Sum" }],
-        ["AWS/RDS", "CPUCreditUsage", "DBInstanceIdentifier", db_instance_identifier, { color = "#9467bd", stat = "Sum" }],
-      ]
-      region = local.aws_region
-
-      legend = {
-        position = "right"
-      }
-
-      yAxis = {
-        left = {
-          min = 0
-        }
-        right = {
-          min = 0
-        }
-      }
-      title  = "RDS CPU Credit Metrics - ${db_instance_identifier}"
-      period = 60
-    }
-  }]
-
   rds_disk_queue = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
     width  = 12
@@ -299,6 +269,6 @@ locals {
     }
   }]
 
-  widgets = concat(local.rds_db_connections_widget, local.rds_acu_util_widget,  local.ecs_cpu_util, local.ecs_memory_util, local.rds_latency, local.rds_disk_queue, local.rds_cpu_credit, local.rds_deadlocks, local.asg_metrics_widget)
+  widgets = concat(local.rds_db_connections_widget, local.rds_acu_util_widget,  local.ecs_cpu_util, local.ecs_memory_util, local.rds_latency, local.rds_disk_queue, local.rds_deadlocks, local.asg_metrics_widget)
 
 }
