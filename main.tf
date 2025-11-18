@@ -168,32 +168,6 @@ locals {
     }
   }]
 
-  asg_metrics_widget = [for asg_name in var.asg_names : {
-    type   = "metric"
-    width  = 12
-    height = 4
-    properties = {
-      view    = "singleValue"
-      stacked = false
-      metrics = [
-        ["AWS/AutoScaling", "GroupMaxSize", "AutoScalingGroupName", asg_name, { color = "#1f77b4" }],
-        ["AWS/AutoScaling", "GroupMinSize", "AutoScalingGroupName", asg_name, { color = "#ff7f0e" }],
-        ["AWS/AutoScaling", "GroupDesiredCapacity", "AutoScalingGroupName", asg_name, { color = "#2ca02c" }],
-      ]
-      region = local.aws_region
-      yAxis = {
-        left = {
-          min = 0
-        }
-        right = {
-          min = 0
-        }
-      }
-      title  = "ASG Metrics - Max/Min/Desired - ${asg_name}"
-      period = var.period
-    }
-  }]
-
   rds_cpu_credit_widget = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
     width  = 4
@@ -249,7 +223,7 @@ locals {
     }
   }]
 
-  rds_ebs_byte_balance_widget = [for db_instance_identifier in var.rds_names : {
+  rds_latency = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
     width  = 12
     height = 8
@@ -257,8 +231,8 @@ locals {
       view    = "timeSeries"
       stacked = false
       metrics = [
-        ["AWS/RDS", "FreeStorageSpace", "DBInstanceIdentifier", db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }],
-        ["AWS/RDS", "VolumeBytesBalance", "DBInstanceIdentifier", db_instance_identifier, { color = "#ff7f0e", stat = "Average" }],
+        ["AWS/RDS", "ReadLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#ff7f0e", stat = "Average" }],
+        ["AWS/RDS", "WriteLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Average" }],
       ]
       region = local.aws_region
 
@@ -276,7 +250,7 @@ locals {
   }]
 
 
-  rds_freeable_memory_widget = [for db_instance_identifier in var.rds_names : {
+  rds_deadlocks = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
     width  = 12
     height = 8
@@ -284,7 +258,8 @@ locals {
       view    = "timeSeries"
       stacked = false
       metrics = [
-        ["AWS/RDS", "FreeableMemory", "DBInstanceIdentifier", db_instance_identifier, { color = "#d62728", stat = "Average" }],
+        ["AWS/RDS", "Deadlocks", "DBInstanceIdentifier", db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }],
+        ["AWS/RDS", "BlockedTransactions", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }],
       ]
       region = local.aws_region
 
@@ -301,7 +276,32 @@ locals {
     }
   }]
 
+  asg_metrics_widget = [for asg_name in var.asg_names : {
+    type   = "metric"
+    width  = 12
+    height = 4
+    properties = {
+      view    = "singleValue"
+      stacked = false
+      metrics = [
+        ["AWS/AutoScaling", "GroupMaxSize", "AutoScalingGroupName", asg_name, { color = "#1f77b4" }],
+        ["AWS/AutoScaling", "GroupMinSize", "AutoScalingGroupName", asg_name, { color = "#ff7f0e" }],
+        ["AWS/AutoScaling", "GroupDesiredCapacity", "AutoScalingGroupName", asg_name, { color = "#2ca02c" }],
+      ]
+      region = local.aws_region
+      yAxis = {
+        left = {
+          min = 0
+        }
+        right = {
+          min = 0
+        }
+      }
+      title  = "ASG Metrics - Max/Min/Desired - ${asg_name}"
+      period = var.period
+    }
+  }]
 
-  widgets = concat(local.ecs_cpu_memory_widget, local.asg_metrics_widget, local.rds_acu_util_widget, local.rds_db_connections_widget, local.rds_cpu_credit_widget, local.rds_cpu_widget, local.rds_disk_queue_widget, local.rds_cpu_util, local.rds_freeable_memory_widget)
+  widgets = concat(local.ecs_cpu_memory_widget, local.asg_metrics_widget, local.rds_acu_util_widget, local.rds_db_connections_widget, local.rds_cpu_widget, local.rds_disk_queue_widget, local.rds_cpu_util, local.rds_latency, local.rds_deadlocks)
 
 }
