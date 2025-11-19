@@ -172,7 +172,7 @@ locals {
           min = 0
         }
       }
-      title  = "RDS Read/Write Latency - ${db_instance_identifier}"
+      title  = "${database.db_instance_identifier} read/write latency"
       period = var.period
     }
   }]
@@ -197,7 +197,7 @@ locals {
           min = 0
         }
       }
-      title  = "RDS Disk Queue Depth - ${db_instance_identifier}"
+      title  = "${database.db_instance_identifier} disk queue depth"
       period = var.period
     }
   }]
@@ -224,7 +224,7 @@ locals {
           min = 0
         }
       }
-      title  = "RDS Deadlocks and Blocked Transactions - ${db_instance_identifier}"
+      title  = "${database.db_instance_identifier} deadlocks and blocked transactions"
       period = var.period
     }
   }]

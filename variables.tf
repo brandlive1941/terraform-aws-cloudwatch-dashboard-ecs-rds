@@ -21,11 +21,12 @@ variable "widgets" {
 }
 
 variable "rds_names" {
-  description = list(object({
-      db_instance_identifier = string
-      region                 = string
-    }))
-  default     = []
+  description = "A list of RDS instances with their identifiers and regions"
+  type = list(object({
+    db_instance_identifier = string
+    region                 = string
+  }))
+  default = []
 }
 
 variable "asg_names" {
