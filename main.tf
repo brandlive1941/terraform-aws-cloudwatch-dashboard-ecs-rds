@@ -1,5 +1,5 @@
 locals {
-  rds_db_connections_widget = [for db_instance_identifier in var.rds_names : {
+  rds_db_connections_widget = [for database in var.rds_names : {
     type   = "metric"
     width  = 4
     height = 4
@@ -31,7 +31,7 @@ locals {
     }
   }]
 
-  rds_acu_util_widget = [for db_instance_identifier in var.rds_names : {
+  rds_acu_util_widget = [for database in var.rds_names : {
     type   = "metric"
     width  = 4
     height = 4
@@ -63,7 +63,7 @@ locals {
     }
   }]
 
-  rds_cpu_util = [for db_instance_identifier in var.rds_names : {
+  rds_cpu_util = [for database in var.rds_names : {
     type   = "metric"
     width  = 4
     height = 4
@@ -151,7 +151,7 @@ locals {
     }
   }]
 
-  rds_latency = [for db_instance_identifier in var.rds_names : {
+  rds_latency = [for database in var.rds_names : {
     type   = "metric"
     width  = 12
     height = 8
@@ -159,10 +159,10 @@ locals {
       view    = "timeSeries"
       stacked = false
       metrics = [
-        ["AWS/RDS", "ReadLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#ff7f0e", stat = "Average" }],
-        ["AWS/RDS", "WriteLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Average" }],
+        ["AWS/RDS", "ReadLatency", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#ff7f0e", stat = "Average" }],
+        ["AWS/RDS", "WriteLatency", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#2ca02c", stat = "Average" }],
       ]
-      region = widget.region
+      region = database.region
 
       yAxis = {
         left = {
@@ -177,7 +177,7 @@ locals {
     }
   }]
 
-  rds_disk_queue = [for db_instance_identifier in var.rds_names : {
+  rds_disk_queue = [for database in var.rds_names : {
     type   = "metric"
     width  = 12
     height = 8
@@ -185,9 +185,9 @@ locals {
       view    = "timeSeries"
       stacked = false
       metrics = [
-        ["AWS/RDS", "DiskQueueDepth", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }],
+        ["AWS/RDS", "DiskQueueDepth", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }],
       ]
-      region = widget.region
+      region = database.region
 
       yAxis = {
         left = {
@@ -203,7 +203,7 @@ locals {
   }]
 
 
-  rds_deadlocks = [for db_instance_identifier in var.rds_names : {
+  rds_deadlocks = [for database in var.rds_names : {
     type   = "metric"
     width  = 12
     height = 8
@@ -211,10 +211,10 @@ locals {
       view    = "timeSeries"
       stacked = false
       metrics = [
-        ["AWS/RDS", "Deadlocks", "DBInstanceIdentifier", db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }],
-        ["AWS/RDS", "BlockedTransactions", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }],
+        ["AWS/RDS", "Deadlocks", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }],
+        ["AWS/RDS", "BlockedTransactions", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }],
       ]
-      region = widget.region
+      region = database.region
 
       yAxis = {
         left = {
@@ -229,31 +229,31 @@ locals {
     }
   }]
 
-  asg_metrics_widget = [for asg_name in var.asg_names : {
-    type   = "metric"
-    width  = 12
-    height = 4
-    properties = {
-      view    = "singleValue"
-      stacked = false
-      metrics = [
-        ["AWS/AutoScaling", "GroupMaxSize", "AutoScalingGroupName", asg_name, { color = "#1f77b4" }],
-        ["AWS/AutoScaling", "GroupMinSize", "AutoScalingGroupName", asg_name, { color = "#ff7f0e" }],
-        ["AWS/AutoScaling", "GroupDesiredCapacity", "AutoScalingGroupName", asg_name, { color = "#2ca02c" }],
-      ]
-      region = widget.region
-      yAxis = {
-        left = {
-          min = 0
-        }
-        right = {
-          min = 0
-        }
-      }
-      title  = "ASG Metrics - Max/Min/Desired - ${asg_name}"
-      period = var.period
-    }
-  }]
+  # asg_metrics_widget = [for asg_name in var.asg_names : {
+  #   type   = "metric"
+  #   width  = 12
+  #   height = 4
+  #   properties = {
+  #     view    = "singleValue"
+  #     stacked = false
+  #     metrics = [
+  #       ["AWS/AutoScaling", "GroupMaxSize", "AutoScalingGroupName", asg_name, { color = "#1f77b4" }],
+  #       ["AWS/AutoScaling", "GroupMinSize", "AutoScalingGroupName", asg_name, { color = "#ff7f0e" }],
+  #       ["AWS/AutoScaling", "GroupDesiredCapacity", "AutoScalingGroupName", asg_name, { color = "#2ca02c" }],
+  #     ]
+  #     region = widget.region
+  #     yAxis = {
+  #       left = {
+  #         min = 0
+  #       }
+  #       right = {
+  #         min = 0
+  #       }
+  #     }
+  #     title  = "ASG Metrics - Max/Min/Desired - ${asg_name}"
+  #     period = var.period
+  #   }
+  # }]
 
   rds         = concat(local.rds_db_connections_widget, local.rds_acu_util_widget, local.rds_latency, local.rds_disk_queue, local.rds_deadlocks, local.asg_metrics_widget)
   widget_list = flatten(concat(local.cpu_widgets, local.memory_widgets, local.rds))

@@ -21,8 +21,10 @@ variable "widgets" {
 }
 
 variable "rds_names" {
-  description = "The exact name of the RDS"
-  type        = list(string)
+  description = list(object({
+      db_instance_identifier = string
+      region                 = string
+    }))
   default     = []
 }
 
