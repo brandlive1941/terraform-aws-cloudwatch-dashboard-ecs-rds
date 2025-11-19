@@ -17,11 +17,11 @@ variable "cluster_name" {
 
 variable "widgets" {
   description = "A map of widgets show on the dashboard"
-  type        = map(object({
-    type = string
+  type = map(object({
+    type     = string
     services = map(string)
   }))
-  default     = {}
+  default = {}
 }
 
 variable "rds_names" {
