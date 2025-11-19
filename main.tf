@@ -7,7 +7,7 @@ locals {
       view    = "singleValue"
       stacked = false
       metrics = [
-        ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }]
+        ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }]
       ]
       region = widget.region
       annotations = {
@@ -26,7 +26,7 @@ locals {
           min = 0
         }
       }
-      title  = "RDS Database Connections - ${db_instance_identifier}"
+      title  = "${database.db_instance_identifier} connections"
       period = var.period
     }
   }]
@@ -39,7 +39,7 @@ locals {
       view    = "singleValue"
       stacked = false
       metrics = [
-        ["AWS/RDS", "ACUUtilization", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }]
+        ["AWS/RDS", "ACUUtilization", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }]
       ]
       region = widget.region
       annotations = {
@@ -58,7 +58,7 @@ locals {
           min = 0
         }
       }
-      title  = "Aurora ACU Utilization - ${db_instance_identifier}"
+      title  = "${database.db_instance_identifier} acu utilization"
       period = var.period
     }
   }]
@@ -71,7 +71,7 @@ locals {
       view    = "singleValue"
       stacked = false
       metrics = [
-        ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }]
+        ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }]
       ]
       region = widget.region
       yAxis = {
@@ -82,7 +82,7 @@ locals {
           min = 0
         }
       }
-      title  = "Aurora CPUUtilization Metrics - ${db_instance_identifier}"
+      title  = "${database.db_instance_identifier} cpu utilization"
       period = var.period
     }
   }]
