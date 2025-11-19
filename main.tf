@@ -89,8 +89,8 @@ locals {
     }
   }]
 
-  widgets = { for widget in var.widgets : widget.key => {
-      "ecs_cpu_util-${widget.key}" = [ {
+  widgets = { for name, widget in var.widgets : name => {
+      "ecs_cpu_util-${name}" = [ {
         type   = "metric"
         width  = 12
         height = 8
@@ -122,7 +122,7 @@ locals {
         }
       }]
 
-      "ecs_memory_util-${widget.key}" = [ {
+      "ecs_memory_util-${name}" = [ {
         type   = "metric"
         width  = 12
         height = 8
