@@ -1,6 +1,4 @@
 locals {
-  aws_region = "us-west-2"
-
   rds_db_connections_widget = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
     width  = 4
@@ -11,7 +9,7 @@ locals {
       metrics = [
         ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }]
       ]
-      region = local.aws_region
+      region = widget.region
       annotations = {
         horizontal = [
           {
@@ -43,7 +41,7 @@ locals {
       metrics = [
         ["AWS/RDS", "ACUUtilization", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }]
       ]
-      region = local.aws_region
+      region = widget.region
       annotations = {
         horizontal = [
           {
@@ -75,7 +73,7 @@ locals {
       metrics = [
         ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }]
       ]
-      region = local.aws_region
+      region = widget.region
       yAxis = {
         left = {
           min = 0
@@ -97,9 +95,9 @@ locals {
       view    = "timeSeries"
       stacked = false
       metrics = [
-        for service_name, color in widget.services : [widget.type, "CPUUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
+        for service_name, color in widget.services : [widget.type, "CPUUtilization", "ServiceName", service_name, "ClusterName", widget.cluster_name, { color = color, stat = "Maximum" }]
       ]
-      region = local.aws_region,
+      region = widget.region,
       annotations = {
         horizontal = [
           {
@@ -116,7 +114,7 @@ locals {
           min = 0
         }
       }
-      title  = "ECS CPU and Memory Metrics - ${var.cluster_name}"
+      title  = "${name} cpu metrics"
       period = var.period
     }
   }]
@@ -129,9 +127,9 @@ locals {
       view    = "timeSeries"
       stacked = false
       metrics = [
-        for service_name, color in widget.services : [widget.type, "MemoryUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
+        for service_name, color in widget.services : [widget.type, "MemoryUtilization", "ServiceName", service_name, "ClusterName", widget.cluster_name, { color = color, stat = "Maximum" }]
       ]
-      region = local.aws_region,
+      region = widget.region,
       annotations = {
         horizontal = [
           {
@@ -148,7 +146,7 @@ locals {
           min = 0
         }
       }
-      title  = "ECS CPU and Memory Metrics - ${var.cluster_name}"
+      title  = "${name} memory metrics"
       period = var.period
     }
   }]
@@ -164,7 +162,7 @@ locals {
         ["AWS/RDS", "ReadLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#ff7f0e", stat = "Average" }],
         ["AWS/RDS", "WriteLatency", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Average" }],
       ]
-      region = local.aws_region
+      region = widget.region
 
       yAxis = {
         left = {
@@ -189,7 +187,7 @@ locals {
       metrics = [
         ["AWS/RDS", "DiskQueueDepth", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }],
       ]
-      region = local.aws_region
+      region = widget.region
 
       yAxis = {
         left = {
@@ -216,7 +214,7 @@ locals {
         ["AWS/RDS", "Deadlocks", "DBInstanceIdentifier", db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }],
         ["AWS/RDS", "BlockedTransactions", "DBInstanceIdentifier", db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }],
       ]
-      region = local.aws_region
+      region = widget.region
 
       yAxis = {
         left = {
@@ -243,7 +241,7 @@ locals {
         ["AWS/AutoScaling", "GroupMinSize", "AutoScalingGroupName", asg_name, { color = "#ff7f0e" }],
         ["AWS/AutoScaling", "GroupDesiredCapacity", "AutoScalingGroupName", asg_name, { color = "#2ca02c" }],
       ]
-      region = local.aws_region
+      region = widget.region
       yAxis = {
         left = {
           min = 0

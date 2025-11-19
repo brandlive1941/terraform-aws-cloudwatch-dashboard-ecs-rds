@@ -9,16 +9,12 @@ variable "dashboard_name" {
   default     = null
 }
 
-variable "cluster_name" {
-  description = "The exact name of the cluster"
-  type        = string
-  default     = null
-}
-
 variable "widgets" {
   description = "A map of widgets show on the dashboard"
   type = map(object({
     type     = string
+    cluster_name   = string
+    region  = string
     services = map(string)
   }))
   default = {}
