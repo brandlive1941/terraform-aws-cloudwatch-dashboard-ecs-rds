@@ -1,15 +1,3 @@
-resource "aws_cloudwatch_dashboard" "main" {
-
-  count = var.dashboard_name != "" ? 1 : 0
-
-  dashboard_name = var.dashboard_name
-  dashboard_body = jsonencode({
-    widgets = local.widgets
-  })
-
-}
-
-
 locals {
   aws_region = "us-west-2"
 
@@ -101,69 +89,72 @@ locals {
     }
   }]
 
-  ecs_cpu_util = [ {
-    type   = "metric"
-    width  = 12
-    height = 8
-    properties = {
-      view    = "timeSeries"
-      stacked = false
-      metrics = [
-        for service_name, color in var.service_names : ["AWS/ECS", "CPUUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
-      ]
-      region = local.aws_region,
-      annotations = {
-        horizontal = [
-          {
-            color = "#ff0000",
-            value = 100
+  widgets = { for widget in var.widgets : widget.key => {
+      "ecs_cpu_util-${widget.key}" = [ {
+        type   = "metric"
+        width  = 12
+        height = 8
+        properties = {
+          view    = "timeSeries"
+          stacked = false
+          metrics = [
+            for service_name, color in widget.value.services : ["AWS/ECS", "CPUUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
+          ]
+          region = local.aws_region,
+          annotations = {
+            horizontal = [
+              {
+                color = "#ff0000",
+                value = 100
+              }
+            ]
           }
-        ]
-      }
-      yAxis = {
-        left = {
-          min = 0
+          yAxis = {
+            left = {
+              min = 0
+            }
+            right = {
+              min = 0
+            }
+          }
+          title  = "ECS CPU and Memory Metrics - ${var.cluster_name}"
+          period = var.period
         }
-        right = {
-          min = 0
-        }
-      }
-      title  = "ECS CPU and Memory Metrics - ${var.cluster_name}"
-      period = var.period
-    }
-  }]
+      }]
 
-  ecs_memory_util = [ {
-    type   = "metric"
-    width  = 12
-    height = 8
-    properties = {
-      view    = "timeSeries"
-      stacked = false
-      metrics = [
-        for service_name, color in var.service_names : ["AWS/ECS", "MemoryUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
-      ]
-      region = local.aws_region,
-      annotations = {
-        horizontal = [
-          {
-            color = "#ff0000",
-            value = 100
+      "ecs_memory_util-${widget.key}" = [ {
+        type   = "metric"
+        width  = 12
+        height = 8
+        properties = {
+          view    = "timeSeries"
+          stacked = false
+          metrics = [
+            for service_name, color in widget.value.services : ["AWS/ECS", "MemoryUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
+          ]
+          region = local.aws_region,
+          annotations = {
+            horizontal = [
+              {
+                color = "#ff0000",
+                value = 100
+              }
+            ]
           }
-        ]
-      }
-      yAxis = {
-        left = {
-          min = 0
+          yAxis = {
+            left = {
+              min = 0
+            }
+            right = {
+              min = 0
+            }
+          }
+          title  = "ECS CPU and Memory Metrics - ${var.cluster_name}"
+          period = var.period
         }
-        right = {
-          min = 0
-        }
-      }
-      title  = "ECS CPU and Memory Metrics - ${var.cluster_name}"
-      period = var.period
+      }]
     }
-  }]
+  }
 
   rds_latency = [for db_instance_identifier in var.rds_names : {
     type   = "metric"
@@ -269,6 +260,17 @@ locals {
     }
   }]
 
-  widgets = concat(local.rds_db_connections_widget, local.rds_acu_util_widget,  local.ecs_cpu_util, local.ecs_memory_util, local.rds_latency, local.rds_disk_queue, local.rds_deadlocks, local.asg_metrics_widget)
+  rds = concat(local.rds_db_connections_widget, local.rds_acu_util_widget, local.rds_latency, local.rds_disk_queue, local.rds_deadlocks, local.asg_metrics_widget)
+  widget_list = flatten(concat(values(local.widgets), local.rds))
+}
+
+resource "aws_cloudwatch_dashboard" "main" {
+
+  count = var.dashboard_name != "" ? 1 : 0
+
+  dashboard_name = var.dashboard_name
+  dashboard_body = jsonencode({
+    widgets = local.widget_list
+  })
 
 }
