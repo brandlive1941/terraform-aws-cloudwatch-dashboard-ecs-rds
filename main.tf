@@ -98,7 +98,7 @@ locals {
           view    = "timeSeries"
           stacked = false
           metrics = [
-            for service_name, color in widget.value.services : ["AWS/ECS", "CPUUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
+            for service_name, color in widget.value.services : [widget.value.type, "CPUUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
           ]
           region = local.aws_region,
           annotations = {
@@ -130,7 +130,7 @@ locals {
           view    = "timeSeries"
           stacked = false
           metrics = [
-            for service_name, color in widget.value.services : ["AWS/ECS", "MemoryUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
+            for service_name, color in widget.value.services : [widget.value.type, "MemoryUtilization", "ServiceName", service_name, "ClusterName", var.cluster_name, { color = color, stat = "Maximum" }]
           ]
           region = local.aws_region,
           annotations = {
