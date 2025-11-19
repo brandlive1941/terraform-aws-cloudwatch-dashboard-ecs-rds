@@ -18,7 +18,6 @@ output "dashboard_body" {
   description = "Cloudwatch dashboard body"
 }
 
-
 output "widget_list" {
   value = local.widget_list
 }
