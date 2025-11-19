@@ -12,10 +12,10 @@ variable "dashboard_name" {
 variable "widgets" {
   description = "A map of widgets show on the dashboard"
   type = map(object({
-    type     = string
-    cluster_name   = string
-    region  = string
-    services = map(string)
+    type         = string
+    cluster_name = string
+    region       = string
+    services     = map(string)
   }))
   default = {}
 }
