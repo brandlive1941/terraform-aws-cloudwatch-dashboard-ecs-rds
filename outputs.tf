@@ -20,5 +20,5 @@ output "dashboard_body" {
 
 
 output "widgets_json" {
-  value = local.widgets
+  value = local.widget_list
 }
