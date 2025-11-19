@@ -19,6 +19,6 @@ output "dashboard_body" {
 }
 
 
-output "widgets_json" {
+output "widget_list" {
   value = local.widget_list
 }
