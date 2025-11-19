@@ -255,7 +255,7 @@ locals {
   #   }
   # }]
 
-  rds         = concat(local.rds_db_connections_widget, local.rds_acu_util_widget, local.rds_latency, local.rds_disk_queue, local.rds_deadlocks, local.asg_metrics_widget)
+  rds         = concat(local.rds_db_connections_widget, local.rds_acu_util_widget, local.rds_latency, local.rds_disk_queue, local.rds_deadlocks)
   widget_list = flatten(concat(local.cpu_widgets, local.memory_widgets, local.rds))
 }
 
