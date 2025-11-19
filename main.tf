@@ -9,7 +9,7 @@ locals {
       metrics = [
         ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }]
       ]
-      region = widget.region
+      region = database.region
       annotations = {
         horizontal = [
           {
@@ -41,7 +41,7 @@ locals {
       metrics = [
         ["AWS/RDS", "ACUUtilization", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#2ca02c", stat = "Maximum" }]
       ]
-      region = widget.region
+      region = database.region
       annotations = {
         horizontal = [
           {
@@ -73,7 +73,7 @@ locals {
       metrics = [
         ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", database.db_instance_identifier, { color = "#1f77b4", stat = "Maximum" }]
       ]
-      region = widget.region
+      region = database.region
       yAxis = {
         left = {
           min = 0
